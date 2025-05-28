@@ -12,31 +12,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users/email")
 @RequiredArgsConstructor
-public class UserController {
+public class EmailController {
+
     private final EmailService emailService;
 
-    @PostMapping("/email")
+    @PostMapping
     public ResponseEntity<Void> addEmail(@AuthenticationPrincipal final CustomUserDetails userDetails,
                                           @RequestBody final AddEmailRequest request) {
         emailService.addEmail(userDetails.getId(), request.email());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping("/email")
+    @PatchMapping
     public ResponseEntity<Email> updateEmail(@AuthenticationPrincipal final CustomUserDetails userDetails,
                                              @RequestBody final UpdateEmailRequest request) {
         emailService.updateEmail(userDetails.getId(), request.oldEmail(), request.newEmail());
         return ResponseEntity.accepted().build();
     }
 
-    @DeleteMapping("/email")
+    @DeleteMapping
     public ResponseEntity<Void> deleteEmail(@AuthenticationPrincipal CustomUserDetails userDetails,
                                             @RequestBody final DeleteEmailRequest request) {
         emailService.deleteEmail(userDetails.getId(), request.email());
         return ResponseEntity.noContent().build();
     }
-
 }

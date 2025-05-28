@@ -27,7 +27,8 @@ public class NotFoundException extends BaseException {
     @RequiredArgsConstructor
     public enum ResourceType {
         USER("U-404-01", "User not found: "),
-        EMAIL("U-404-02", "Email not found: ");
+        EMAIL("U-404-02", "Email not found: "),
+        PHONE("U-404-02", "Phone number not found: ");
 
         private final String code;
         private final String message;
