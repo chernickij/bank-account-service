@@ -10,6 +10,7 @@ import com.chernickij.bankaccount.repository.UserRepository;
 import com.chernickij.bankaccount.sevice.PhoneService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PhoneServiceImpl implements PhoneService {
+    public static final String PHONE_CACHE_NAME = "phoneCache";
 
+    private final CacheManager cacheManager;
     private final PhoneRepository phoneRepository;
     private final UserRepository userRepository;
 
@@ -57,6 +60,7 @@ public class PhoneServiceImpl implements PhoneService {
 
         phone.setPhone(newPhone);
         phoneRepository.save(phone);
+        cacheManager.getCache(PHONE_CACHE_NAME).evict(oldPhone);
     }
 
     @Override
@@ -73,5 +77,6 @@ public class PhoneServiceImpl implements PhoneService {
         }
 
         phoneRepository.delete(phone);
+        cacheManager.getCache(PHONE_CACHE_NAME).evict(phoneToDelete);
     }
 }

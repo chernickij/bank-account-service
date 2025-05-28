@@ -10,6 +10,7 @@ import com.chernickij.bankaccount.repository.UserRepository;
 import com.chernickij.bankaccount.sevice.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
+    public static final String EMAIL_CACHE_NAME = "emailCache";
 
+    private final CacheManager cacheManager;
     private final EmailRepository emailRepository;
     private final UserRepository userRepository;
 
@@ -58,6 +61,7 @@ public class EmailServiceImpl implements EmailService {
 
         email.setEmail(newEmail);
         emailRepository.save(email);
+        cacheManager.getCache(EMAIL_CACHE_NAME).evict(oldEmail);
     }
 
     @Override
@@ -76,5 +80,6 @@ public class EmailServiceImpl implements EmailService {
         }
 
         emailRepository.delete(email);
+        cacheManager.getCache(EMAIL_CACHE_NAME).evict(emailToDelete);
     }
 }

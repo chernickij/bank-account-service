@@ -2,7 +2,6 @@ package com.chernickij.bankaccount.config;
 
 import com.chernickij.bankaccount.sevice.impl.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -15,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableScheduling
-@EnableCaching
 @RequiredArgsConstructor
 public class ApplicationConfig {
     private final CustomUserDetailsService userDetailsService;
