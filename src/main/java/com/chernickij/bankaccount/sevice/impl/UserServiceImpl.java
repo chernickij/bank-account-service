@@ -1,9 +1,9 @@
 package com.chernickij.bankaccount.sevice.impl;
 
+import com.chernickij.bankaccount.dto.UpdateUserRequest;
 import com.chernickij.bankaccount.dto.UserResponse;
 import com.chernickij.bankaccount.entity.User;
 import com.chernickij.bankaccount.exception.NotFoundException;
-import com.chernickij.bankaccount.repository.AccountRepository;
 import com.chernickij.bankaccount.repository.UserRepository;
 import com.chernickij.bankaccount.sevice.UserService;
 import com.chernickij.bankaccount.dto.UserSearch;
@@ -30,7 +30,6 @@ public class UserServiceImpl implements UserService {
     @PersistenceContext
     private final EntityManager entityManager;
     private final UserRepository userRepository;
-    private final AccountRepository accountRepository;
 
     @Override
     public UserResponse getUser(final Long userId) {
@@ -40,7 +39,21 @@ public class UserServiceImpl implements UserService {
         return UserMapper.userToGetUserResponse(user);
     }
 
-@Override
+    @Override
+    public UserResponse updateUser(final Long userId, final UpdateUserRequest request) {
+        log.info("Updating user by id: {}", userId);
+        final User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.USER, userId.toString()));
+
+        user.setName(request.name());
+        user.setDateOfBirth(request.dateOfBirth());
+
+        userRepository.save(user);
+
+        return UserMapper.userToGetUserResponse(user);
+    }
+
+    @Override
     public Page<UserResponse> searchUsers(final UserSearch userSearch) {
         log.info("Searching users with criteria: {}", userSearch);
 

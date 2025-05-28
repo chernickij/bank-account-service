@@ -1,8 +1,10 @@
 package com.chernickij.bankaccount.controller;
 
+import com.chernickij.bankaccount.dto.UpdateUserRequest;
 import com.chernickij.bankaccount.dto.UserResponse;
 import com.chernickij.bankaccount.dto.UserSearch;
 import com.chernickij.bankaccount.exception.ErrorResponse;
+import com.chernickij.bankaccount.security.CustomUserDetails;
 import com.chernickij.bankaccount.sevice.impl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -43,7 +46,7 @@ public class UserController {
         return userService.searchUsers(criteria);
     }
 
-    @Operation(summary = "Get user information", responses = {
+    @Operation(summary = "Get user data", responses = {
             @ApiResponse(responseCode = "200", description = "Return user data",
                     content = @Content(mediaType = APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(
@@ -54,5 +57,19 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserResponse> getUser(@PathVariable final Long userId) {
         return ResponseEntity.ok(userService.getUser(userId));
+    }
+
+    @Operation(summary = "Update user", responses = {
+            @ApiResponse(responseCode = "200", description = "Updated user data",
+                    content = @Content(mediaType = APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(
+                    mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(
+                    mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PutMapping
+    public ResponseEntity<UserResponse> updateUser(@AuthenticationPrincipal final CustomUserDetails userDetails,
+                                                   @RequestBody final UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(userDetails.getId(), request));
     }
 }
