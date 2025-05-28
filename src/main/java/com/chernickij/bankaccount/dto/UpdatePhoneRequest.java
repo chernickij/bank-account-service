@@ -1,5 +1,9 @@
 package com.chernickij.bankaccount.dto;
 
-public record UpdatePhoneRequest(String oldPhone, String newPhone) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record UpdatePhoneRequest(
+        @Schema(description = "User old phone number") String oldPhone,
+        @Schema(description = "User new phone number") String newPhone) {
 
 }

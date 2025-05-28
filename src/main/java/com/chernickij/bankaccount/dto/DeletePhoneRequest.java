@@ -1,5 +1,8 @@
 package com.chernickij.bankaccount.dto;
 
-public record DeletePhoneRequest(String phone) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record DeletePhoneRequest(
+        @Schema(description = "User phone number") String phone) {
 
 }

@@ -39,17 +39,17 @@ public class PhoneServiceImpl implements PhoneService {
     @Transactional
     public void updatePhone(final Long userId, final String oldPhone, final String newPhone) {
         final User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResourceType.USER, userId.toString()));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.USER, userId.toString()));
 
         final Phone phone = phoneRepository.findByPhone(newPhone)
-                .orElseThrow(() -> new NotFoundException(ResourceType.PHONE, oldPhone));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.PHONE, oldPhone));
 
         if (!phone.getUser().getId().equals(user.getId())) {
-            throw new NotFoundException(ResourceType.PHONE, oldPhone);
+            throw new ConflictException(ConflictException.ResourceType.NOT_USER_PHONE, oldPhone);
         }
 
         if (!phone.getPhone().equals(newPhone) && phoneRepository.findByPhone(newPhone).isPresent()) {
-            throw new ConflictException(ConflictException.ResourceType.NOT_USER_PHONE, newPhone);
+            throw new ConflictException(ConflictException.ResourceType.PHONE, newPhone);
         }
 
         phone.setPhone(newPhone);

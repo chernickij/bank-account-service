@@ -1,5 +1,9 @@
 package com.chernickij.bankaccount.dto;
 
-public record UpdateEmailRequest(String oldEmail, String newEmail) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+public record UpdateEmailRequest(
+        @Schema(description = "Old user email address") String oldEmail,
+        @Schema(description = "New user email address") String newEmail) {
 
 }

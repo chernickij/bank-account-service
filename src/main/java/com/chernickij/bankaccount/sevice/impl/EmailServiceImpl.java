@@ -39,17 +39,17 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     public void updateEmail(final Long userId, final String oldEmail, final String newEmail) {
         final User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResourceType.USER, userId.toString()));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.USER, userId.toString()));
 
         final Email email = emailRepository.findByEmail(oldEmail)
-                .orElseThrow(() -> new NotFoundException(ResourceType.EMAIL, oldEmail));
+                .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.EMAIL, oldEmail));
 
         if (!email.getUser().getId().equals(user.getId())) {
-            throw new NotFoundException(ResourceType.EMAIL, oldEmail);
+            throw new ConflictException(ConflictException.ResourceType.NOT_USER_EMAIL, oldEmail);
         }
 
         if (!email.getEmail().equals(newEmail) && emailRepository.findByEmail(newEmail).isPresent()) {
-            throw new ConflictException(ConflictException.ResourceType.NOT_USER_EMAIL, newEmail);
+            throw new ConflictException(ConflictException.ResourceType.EMAIL, newEmail);
         }
 
         email.setEmail(newEmail);
