@@ -22,13 +22,16 @@ public class SecurityConfig {
     private final JwtAunticationFilter jwtAunticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req
+                                .requestMatchers("/users/search")
+                                .permitAll()
+                                .requestMatchers("/users/{userId}")
+                                .permitAll()
                                 .requestMatchers("/auth/**")
                                 .permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")

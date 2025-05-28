@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,4 +30,10 @@ public class User {
 
     @Column(name = "password", nullable = false, length = 500)
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<Email> emails;
+
+    @OneToMany(mappedBy = "user")
+    private List<Phone> phones;
 }
