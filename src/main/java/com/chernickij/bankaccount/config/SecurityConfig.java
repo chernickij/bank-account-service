@@ -27,26 +27,7 @@ public class SecurityConfig {
 
     private final JwtAunticationFilter jwtAunticationFilter;
     private final AuthenticationProvider authenticationProvider;
-    private final EmailBasedUserDetailsService userDetailsService;
 
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
-    }
-
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(final AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
@@ -55,6 +36,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req
                                 .requestMatchers("/auth/**")
+                                .permitAll()
+                                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                                 .permitAll()
                                 .anyRequest().authenticated()
                 )

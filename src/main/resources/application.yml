@@ -1,3 +1,8 @@
+app:
+  name: "@project.name@"
+  apiVersion: "@bank-account-service.version@"
+  description: "@project.description@"
+
 spring:
   application:
     name: bank-account-service
