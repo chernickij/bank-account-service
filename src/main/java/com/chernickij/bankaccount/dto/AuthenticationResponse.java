@@ -1,5 +1,6 @@
 package com.chernickij.bankaccount.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
-    private String accessToken;
+    @Schema(description = "Access Token") private String accessToken;
 }

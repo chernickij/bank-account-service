@@ -2,6 +2,8 @@ app:
   name: "@project.name@"
   apiVersion: "@bank-account-service.version@"
   description: "@project.description@"
+  balance-checker:
+    fixed-rate: 30000
 
 spring:
   application:
