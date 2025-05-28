@@ -9,9 +9,11 @@ import com.chernickij.bankaccount.repository.PhoneRepository;
 import com.chernickij.bankaccount.repository.UserRepository;
 import com.chernickij.bankaccount.sevice.PhoneService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PhoneServiceImpl implements PhoneService {
@@ -21,7 +23,8 @@ public class PhoneServiceImpl implements PhoneService {
 
     @Override
     @Transactional
-    public void addPhone(final Long userId, final String newPhone){
+    public void addPhone(final Long userId, final String newPhone) {
+        log.info("Adding phone {}", newPhone);
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ResourceType.USER, userId.toString()));
 

@@ -9,9 +9,11 @@ import com.chernickij.bankaccount.repository.EmailRepository;
 import com.chernickij.bankaccount.repository.UserRepository;
 import com.chernickij.bankaccount.sevice.EmailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
@@ -21,7 +23,8 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Transactional
-    public void addEmail(final Long userId, final String newEmail){
+    public void addEmail(final Long userId, final String newEmail) {
+        log.info("Adding new email to user {}", userId);
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ResourceType.USER, userId.toString()));
 
@@ -38,6 +41,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     @Transactional
     public void updateEmail(final Long userId, final String oldEmail, final String newEmail) {
+        log.info("Updating email to user {}", userId);
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.USER, userId.toString()));
 
@@ -59,6 +63,8 @@ public class EmailServiceImpl implements EmailService {
     @Override
     @Transactional
     public void deleteEmail(final Long userId, final String emailToDelete) {
+        log.info("Deleting email to user {}", userId);
+
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ResourceType.USER, userId.toString()));
 

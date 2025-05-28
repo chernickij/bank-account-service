@@ -5,6 +5,7 @@ import com.chernickij.bankaccount.dto.AuthenticationResponse;
 import com.chernickij.bankaccount.security.CustomUserDetails;
 import com.chernickij.bankaccount.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl {
@@ -22,6 +24,7 @@ public class AuthenticationServiceImpl {
     private final JwtUtil jwtUtil;
 
     public AuthenticationResponse authenticate(final AuthenticationRequest request) {
+        log.info("Authenticating a user with email address: {}", request.email());
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
