@@ -1,6 +1,6 @@
 package com.chernickij.bankaccount.security;
 
-import com.chernickij.bankaccount.sevice.EmailBasedUserDetailsService;
+import com.chernickij.bankaccount.sevice.impl.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -21,7 +20,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class JwtAunticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final EmailBasedUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(

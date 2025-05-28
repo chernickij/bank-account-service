@@ -1,6 +1,6 @@
 package com.chernickij.bankaccount.config;
 
-import com.chernickij.bankaccount.sevice.EmailBasedUserDetailsService;
+import com.chernickij.bankaccount.sevice.impl.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableCaching
 @RequiredArgsConstructor
 public class ApplicationConfig {
-    private final EmailBasedUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
