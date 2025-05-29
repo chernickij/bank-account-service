@@ -1,11 +1,13 @@
 package com.chernickij.bankaccount.security;
 
+import com.chernickij.bankaccount.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
@@ -40,13 +42,12 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public boolean isNotTokenValid(final String token, final CustomUserDetails userDetails) {
+    public boolean isNotTokenValid(final String token, final UserDetails userDetails) {
         return !isTokenValid(token, userDetails);
     }
 
-    public boolean isTokenValid(final String token, final CustomUserDetails userDetails) {
-        final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    public boolean isTokenValid(final String token, final UserDetails userDetails) {
+        return (!isTokenExpired(token));
     }
 
     private boolean isTokenExpired(final String token) {
@@ -57,19 +58,25 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String generateToken(final CustomUserDetails user) {
-        return generateToken(new HashMap<>(), user);
+    public String generateToken(final UserDetails userDetails, final String email) {
+        final Map<String, Object> claims = new HashMap<>();
+        if (userDetails instanceof User customUserDetails) {
+            claims.put("id", customUserDetails.getId());
+            claims.put("email", email);
+            claims.put("role", customUserDetails.getRole());
+        }
+        return generateToken(claims, userDetails, email);
     }
 
-    public String generateToken(final Map<String, Object> extraClaims, final CustomUserDetails userDetails) {
-        return buildToken(extraClaims, userDetails);
+    public String generateToken(final Map<String, Object> extraClaims, final UserDetails userDetails, final String email) {
+        return buildToken(extraClaims, userDetails, email);
     }
 
-    private String buildToken(final Map<String, Object> extraClaims, final CustomUserDetails userDetails) {
+    private String buildToken(final Map<String, Object> extraClaims, final UserDetails userDetails, final String email) {
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)

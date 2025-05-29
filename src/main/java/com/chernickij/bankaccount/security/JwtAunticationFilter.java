@@ -1,13 +1,17 @@
 package com.chernickij.bankaccount.security;
 
-import com.chernickij.bankaccount.sevice.impl.CustomUserDetailsService;
+import com.chernickij.bankaccount.sevice.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,8 +23,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 public class JwtAunticationFilter extends OncePerRequestFilter {
 
+    public static final String BEARER_PREFIX = "Bearer ";
+
     private final JwtUtil jwtUtil;
-    private final CustomUserDetailsService userDetailsService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(
@@ -28,34 +34,34 @@ public class JwtAunticationFilter extends OncePerRequestFilter {
             final HttpServletResponse response,
             final FilterChain filterChain
     ) throws ServletException, IOException {
-        final String authHeader = request.getHeader(AUTHORIZATION);
-
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        final String token = authHeader.substring(7);
-        final String userEmail = jwtUtil.extractUsername(token);
-
-        if (userEmail == null) {
+        var authHeader = request.getHeader(AUTHORIZATION);
+        if (StringUtils.isEmpty(authHeader) || !StringUtils.startsWith(authHeader, BEARER_PREFIX)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final CustomUserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-        if (jwtUtil.isNotTokenValid(token, userDetails)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        var jwt = authHeader.substring(BEARER_PREFIX.length());
+        var username = jwtUtil.extractUsername(jwt);
 
-        final UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
+        if (StringUtils.isNotEmpty(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userService.
+                    userDetailsService()
+                    .loadUserByUsername(username);
+
+            if (jwtUtil.isTokenValid(jwt, userDetails)) {
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+            }
+        }
         filterChain.doFilter(request, response);
 
     }

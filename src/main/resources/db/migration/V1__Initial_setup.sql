@@ -3,6 +3,7 @@ CREATE TABLE users
     id            BIGINT PRIMARY KEY,
     name          VARCHAR(500),
     date_of_birth DATE,
+    role          VARCHAR(20),
     password      VARCHAR(500)
 );
 

@@ -23,4 +23,8 @@ public class Email {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    public Email(final String email) {
+        this.email = email;
+    }
 }

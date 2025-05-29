@@ -1,8 +1,11 @@
 package com.chernickij.bankaccount.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 
 public record AddPhoneRequest(
-        @Schema(description = "User phone number") String phone) {
+        @Schema(description = "User phone number")
+        @Pattern(regexp = "^7\\d{10}$")
+        String phone) {
 
 }

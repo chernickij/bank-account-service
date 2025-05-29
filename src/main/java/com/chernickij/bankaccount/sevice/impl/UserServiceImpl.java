@@ -4,6 +4,7 @@ import com.chernickij.bankaccount.dto.UpdateUserRequest;
 import com.chernickij.bankaccount.dto.UserResponse;
 import com.chernickij.bankaccount.entity.User;
 import com.chernickij.bankaccount.exception.NotFoundException;
+import com.chernickij.bankaccount.repository.EmailRepository;
 import com.chernickij.bankaccount.repository.UserRepository;
 import com.chernickij.bankaccount.sevice.UserService;
 import com.chernickij.bankaccount.dto.UserSearch;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +33,7 @@ public class UserServiceImpl implements UserService {
     @PersistenceContext
     private final EntityManager entityManager;
     private final UserRepository userRepository;
+    private final EmailRepository emailRepository;
 
     @Override
     public UserResponse getUser(final Long userId) {
@@ -90,5 +94,16 @@ public class UserServiceImpl implements UserService {
         final Long count = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(users, pageable, count);
+    }
+
+    @Override
+    public UserDetails getByEmail(String email) {
+        return emailRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(NotFoundException.ResourceType.EMAIL, email)).getUser();
+    }
+
+    @Override
+    public UserDetailsService userDetailsService() {
+        return this::getByEmail;
     }
 }

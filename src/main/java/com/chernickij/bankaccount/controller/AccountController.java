@@ -1,8 +1,8 @@
 package com.chernickij.bankaccount.controller;
 
 import com.chernickij.bankaccount.dto.TransferRequest;
+import com.chernickij.bankaccount.entity.User;
 import com.chernickij.bankaccount.exception.ErrorResponse;
-import com.chernickij.bankaccount.security.CustomUserDetails;
 import com.chernickij.bankaccount.sevice.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -38,7 +38,7 @@ public class AccountController {
                     mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/transfer")
-    public ResponseEntity<Void> transferMoney(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<Void> transferMoney(@AuthenticationPrincipal User userDetails,
                                               @RequestBody TransferRequest request) {
         accountService.transfer(userDetails.getId(), request);
         return ResponseEntity.accepted().build();
